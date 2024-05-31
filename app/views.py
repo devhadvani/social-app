@@ -18,7 +18,7 @@ from rest_framework_simplejwt.tokens import Token
 from rest_framework_simplejwt.settings import api_settings
 from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
 from .serializers import PasswordResetRequestSerializer, PasswordResetSerializer
-
+from .tasks import send_password_reset_email,send_verification_email
 
 User = get_user_model()
 
@@ -31,13 +31,17 @@ class UserRegistrationAPIView(generics.CreateAPIView):
         user = serializer.save()
         token = EmailVerificationToken.for_user(user)
         verification_link = f"http://{self.request.get_host()}/verify-email/{str(token)}/"
-        send_mail(
-            'Verify your email',
-            f'Click the link to verify your email: {verification_link}',
-            settings.DEFAULT_FROM_EMAIL,
-            [user.email],
-            fail_silently=False,
-        )
+        send_verification_email.delay(user.email,verification_link)
+        return Response({'message': 'Account created successfully , please check your email and verify your email'}, status=status.HTTP_200_OK)
+
+        # send_mail(
+        #     'Verify your email',
+        #     f'Click the link to verify your email: {verification_link}',
+        #     settings.DEFAULT_FROM_EMAIL,
+        #     [user.email],
+        #     fail_silently=False,
+        # )
+
 
 class EmailVerificationAPIView(APIView):
     def get(self, request, token):
@@ -129,13 +133,7 @@ class PasswordResetRequestAPIView(APIView):
             user = get_object_or_404(User, email=email)
             token = password_reset_token.make_token(user)
             reset_link = f"http://{self.request.get_host()}/reset-password-confirm/?token={token}&email={email}"
-            send_mail(
-                'Password Reset Request',
-                f'Click the link to reset your password: {reset_link}',
-                settings.DEFAULT_FROM_EMAIL,
-                [user.email],
-                fail_silently=False,
-            )
+            send_password_reset_email.delay(user.email, reset_link)
             return Response({'message': 'Password reset link sent'}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
