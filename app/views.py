@@ -2,16 +2,7 @@ from django.shortcuts import render
 from .models import Test
 from .serializers import Textserializer
 from rest_framework import generics
-
-class Testview(generics.ListCreateAPIView):
-    queryset = Test.objects.all()
-    serializer_class = Textserializer
-
-    def get_queryset(self):
-        print(self.request.user)  # Access the request object here
-        return super().get_queryset()
-
-
+from datetime import timedelta
 from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -23,6 +14,11 @@ from .serializers import UserRegistrationSerializer
 from django.urls import reverse
 from django.shortcuts import get_object_or_404
 from .token import EmailVerificationToken
+from rest_framework_simplejwt.tokens import Token
+from rest_framework_simplejwt.settings import api_settings
+from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
+
+
 User = get_user_model()
 
 
@@ -55,9 +51,35 @@ class EmailVerificationAPIView(APIView):
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
+
+class CustomAccessToken(AccessToken):
+    token_type = 'access'
+    lifetime = timedelta(hours=1)  # Adjust this as per your requirement
+
+    @classmethod
+    def for_user(cls, user):
+        token = super().for_user(user)
+        # Add custom user information to the token payload
+        token['email'] = user.email
+        # token['username'] = user.username
+        # Add any other fields you want
+        return token
+
+class CustomRefreshToken(RefreshToken):
+    token_type = 'refresh'
+    lifetime = timedelta(days=7) 
+
+    @classmethod
+    def for_user(cls, user):
+        token = super().for_user(user)
+        # Add custom user information to the token payload
+        token['email'] = user.email
+        # token['username'] = user.username
+        # Add any other fields you want
+        return token
+
 class UserLoginAPIView(APIView):
     def post(self, request):
-        from rest_framework_simplejwt.tokens import RefreshToken
         from django.contrib.auth import authenticate
 
         email = request.data.get('email')
@@ -66,10 +88,11 @@ class UserLoginAPIView(APIView):
 
         if user is not None:
             if user.email_verified:
-                refresh = RefreshToken.for_user(user)
+                refresh = CustomRefreshToken.for_user(user)  # Use CustomRefreshToken here
+                access = CustomAccessToken.for_user(user)   # Use CustomAccessToken here
                 return Response({
                     'refresh': str(refresh),
-                    'access': str(refresh.access_token),
+                    'access': str(access),
                 })
             else:
                 return Response({'error': 'Email is not verified'}, status=status.HTTP_400_BAD_REQUEST)
@@ -86,3 +109,14 @@ class UserLogoutAPIView(APIView):
             return Response({'message': 'Logout successful'}, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+class Testview(generics.ListCreateAPIView):
+    queryset = Test.objects.all()
+    serializer_class = Textserializer
+
+    def get_queryset(self):
+        print(self.request.user) 
+        return super().get_queryset()
+
