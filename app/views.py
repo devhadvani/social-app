@@ -124,6 +124,18 @@ class CreateProfileAPIView(generics.ListCreateAPIView):
         print(self.request.user) 
         return super().get_queryset()
 
+class RUDProfileAPIView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Profile.objects.all()
+    serializer_class = ProfileSerializer
+
+    def get_object(self):
+        # print(self.request.user) 
+        name = self.kwargs.get('name')
+        print(name)
+        print(Profile.objects.get(name=name))
+
+        return Profile.objects.get(name=name)
+
 
 
 

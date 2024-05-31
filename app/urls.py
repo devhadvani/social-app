@@ -8,6 +8,7 @@ urlpatterns = [
     path('logout/', UserLogoutAPIView.as_view(), name='logout'),
     path('test/', Testview.as_view(), name='test'),
     path('create-profile/', CreateProfileAPIView.as_view(), name='create-profile'),
+    path('profile/<str:name>/', RUDProfileAPIView.as_view(), name='profile'),
     path('password-reset/', PasswordResetRequestAPIView.as_view(), name='password-reset-request'),
     path('reset-password-confirm/', PasswordResetConfirmAPIView.as_view(), name='password-reset-confirm'),
 ]
