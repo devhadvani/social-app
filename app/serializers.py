@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Test
+from .models import Test,Profile
 
 class Textserializer(serializers.ModelSerializer):
     class Meta:
@@ -46,3 +46,12 @@ class PasswordResetSerializer(serializers.Serializer):
         if attrs['new_password'] != attrs['confirm_password']:
             raise serializers.ValidationError("Passwords do not match.")
         return attrs
+
+
+class ProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Profile
+        fields = ['user','bio','profile_image','name','is_private']
+
+        def create(self, validated_data):
+            return Profile.objects.create(**validated_data)

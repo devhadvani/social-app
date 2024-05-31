@@ -1,6 +1,5 @@
 from django.shortcuts import render
-from .models import Test
-from .serializers import Textserializer
+from .models import Test,Profile
 from rest_framework import generics
 from datetime import timedelta
 from rest_framework import generics, status
@@ -10,14 +9,13 @@ from django.contrib.auth import get_user_model
 from django.core.mail import send_mail
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.conf import settings
-from .serializers import UserRegistrationSerializer
+from .serializers import UserRegistrationSerializer,ProfileSerializer,Textserializer,PasswordResetRequestSerializer, PasswordResetSerializer
 from django.urls import reverse
 from django.shortcuts import get_object_or_404
 from .token import EmailVerificationToken,password_reset_token
 from rest_framework_simplejwt.tokens import Token
 from rest_framework_simplejwt.settings import api_settings
 from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
-from .serializers import PasswordResetRequestSerializer, PasswordResetSerializer
 from .tasks import send_password_reset_email,send_verification_email
 
 User = get_user_model()
@@ -33,15 +31,6 @@ class UserRegistrationAPIView(generics.CreateAPIView):
         verification_link = f"http://{self.request.get_host()}/verify-email/{str(token)}/"
         send_verification_email.delay(user.email,verification_link)
         return Response({'message': 'Account created successfully , please check your email and verify your email'}, status=status.HTTP_200_OK)
-
-        # send_mail(
-        #     'Verify your email',
-        #     f'Click the link to verify your email: {verification_link}',
-        #     settings.DEFAULT_FROM_EMAIL,
-        #     [user.email],
-        #     fail_silently=False,
-        # )
-
 
 class EmailVerificationAPIView(APIView):
     def get(self, request, token):
@@ -124,6 +113,19 @@ class Testview(generics.ListCreateAPIView):
     def get_queryset(self):
         print(self.request.user) 
         return super().get_queryset()
+
+
+
+class CreateProfileAPIView(generics.ListCreateAPIView):
+    queryset = Profile.objects.all()
+    serializer_class = ProfileSerializer
+
+    def get_queryset(self):
+        print(self.request.user) 
+        return super().get_queryset()
+
+
+
 
 class PasswordResetRequestAPIView(APIView):
     def post(self, request):
