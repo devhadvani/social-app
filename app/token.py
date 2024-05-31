@@ -1,5 +1,6 @@
 from rest_framework_simplejwt.tokens import Token
 from datetime import timedelta
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
 
 class EmailVerificationToken(Token):
     token_type = 'email_verification'
@@ -12,3 +13,9 @@ class EmailVerificationToken(Token):
         token.payload['email'] = user.email
         token.payload['token_type'] = cls.token_type
         return token
+
+
+class PasswordResetTokenGenerator(PasswordResetTokenGenerator):
+    pass
+
+password_reset_token = PasswordResetTokenGenerator()
