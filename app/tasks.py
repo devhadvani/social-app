@@ -19,6 +19,6 @@ def send_verification_email(user_email,verification_link):
     'Verify your email',
     f'Click the link to verify your email: {verification_link}',
     settings.DEFAULT_FROM_EMAIL,
-    [user.email],
+    [user_email],
     fail_silently=False,
     )

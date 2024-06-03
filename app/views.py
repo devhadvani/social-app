@@ -132,9 +132,9 @@ class RUDProfileAPIView(generics.RetrieveUpdateDestroyAPIView):
         # print(self.request.user) 
         name = self.kwargs.get('name')
         print(name)
-        print(Profile.objects.get(name=name))
+        print(Profile.objects.get(user__name=name))
 
-        return Profile.objects.get(name=name)
+        return Profile.objects.get(user__name=name)
 
 
 
