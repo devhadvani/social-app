@@ -55,3 +55,10 @@ class ProfileSerializer(serializers.ModelSerializer):
 
         def create(self, validated_data):
             return Profile.objects.create(**validated_data)
+
+from .models import Follow
+
+class FollowSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Follow
+        fields = ['follower', 'following', 'created_at']

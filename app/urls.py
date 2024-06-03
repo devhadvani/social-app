@@ -11,5 +11,9 @@ urlpatterns = [
     path('profile/<str:name>/', RUDProfileAPIView.as_view(), name='profile'),
     path('password-reset/', PasswordResetRequestAPIView.as_view(), name='password-reset-request'),
     path('reset-password-confirm/', PasswordResetConfirmAPIView.as_view(), name='password-reset-confirm'),
+    path('follow/', FollowUserView.as_view(), name='follow-user'),
+    path('unfollow/', UnfollowUserView.as_view(), name='unfollow-user'),
+    path('followers/<str:name>/', FollowersListView.as_view(), name='followers-list'),
+    path('following/<str:name>/', FollowingListView.as_view(), name='following-list'),
 ]
 

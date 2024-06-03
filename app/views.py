@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .models import Test,Profile
+from .models import Test,Profile,Follow
 from rest_framework import generics
 from datetime import timedelta
 from rest_framework import generics, status
@@ -9,7 +9,13 @@ from django.contrib.auth import get_user_model
 from django.core.mail import send_mail
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.conf import settings
-from .serializers import UserRegistrationSerializer,ProfileSerializer,Textserializer,PasswordResetRequestSerializer, PasswordResetSerializer
+from .serializers import ( 
+    UserRegistrationSerializer,
+    ProfileSerializer,Textserializer,
+    PasswordResetRequestSerializer,
+     PasswordResetSerializer,
+     FollowSerializer
+     )
 from django.urls import reverse
 from django.shortcuts import get_object_or_404
 from .token import EmailVerificationToken,password_reset_token
@@ -164,3 +170,49 @@ class PasswordResetConfirmAPIView(APIView):
                 return Response({'message': 'Password reset successfully'}, status=status.HTTP_200_OK)
             return Response({'error': 'Invalid token'}, status=status.HTTP_400_BAD_REQUEST)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class FollowUserView(generics.CreateAPIView):
+    queryset = Follow.objects.all()
+    serializer_class = FollowSerializer
+    # permission_classes = [permissions.IsAuthenticated]
+
+    def create(self, request, *args, **kwargs):
+        following_name = request.data.get('following')
+        print("name",following_name)
+        following = get_object_or_404(User, name=following_name)
+        follow, created = Follow.objects.get_or_create(follower=request.user, following=following)
+        if not created:
+            return Response({"detail": "You are already following this user."}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"detail": "Successfully followed user."}, status=status.HTTP_201_CREATED)
+
+class UnfollowUserView(generics.DestroyAPIView):
+    queryset = Follow.objects.all()
+    serializer_class = FollowSerializer
+    # permission_classes = [permissions.IsAuthenticated]
+
+    def delete(self, request, *args, **kwargs):
+        following_name = request.data.get('following')
+        following = get_object_or_404(User, name=following_name)
+        follow = Follow.objects.filter(follower=request.user, following=following).first()
+        if follow:
+            follow.delete()
+            return Response({"detail": "Successfully unfollowed user."}, status=status.HTTP_204_NO_CONTENT)
+        return Response({"detail": "You are not following this user."}, status=status.HTTP_400_BAD_REQUEST)
+
+class FollowersListView(generics.ListAPIView):
+    serializer_class = FollowSerializer
+    # permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        user_name = self.kwargs['name']
+        user = get_object_or_404(User, name=user_name)
+        return Follow.objects.filter(following=user)
+
+class FollowingListView(generics.ListAPIView):
+    serializer_class = FollowSerializer
+    # permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        user_name = self.kwargs['name']
+        user = get_object_or_404(User, name=user_name)
+        return Follow.objects.filter(follower=user)
