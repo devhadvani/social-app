@@ -30,38 +30,38 @@ const UserProfile = () => {
     <div className="bg-black min-h-screen text-white flex">
       {/* Sidebar */}
       <div className="w-1/5 p-4 border-r border-gray-800">
-        <div className="flex flex-col items-start">
-          <h1 className="text-2xl font-bold mb-6">Instagram</h1>
-          <nav className="space-y-4">
-            <a href="#" className="flex items-center space-x-2 hover:text-gray-400">
+        <div className="flex flex-col items-start ml-5 mt-6">
+          <h1 className="text-4xl f mb-6">Instagram</h1>
+          <nav className="space-y-8 text-1xl font-normal mt-8">
+            <a href="#" className="flex items-center space-x-4 hover:text-gray-400">
               <i className="fas fa-home"></i>
               <span>Home</span>
             </a>
-            <a href="#" className="flex items-center space-x-2 hover:text-gray-400">
+            <a href="#" className="flex items-center space-x-4 hover:text-gray-400">
               <i className="fas fa-search"></i>
               <span>Search</span>
             </a>
-            <a href="#" className="flex items-center space-x-2 hover:text-gray-400">
+            <a href="#" className="flex items-center space-x-4 hover:text-gray-400">
               <i className="fas fa-compass"></i>
               <span>Explore</span>
             </a>
-            <a href="#" className="flex items-center space-x-2 hover:text-gray-400">
+            <a href="#" className="flex items-center space-x-4 hover:text-gray-400">
               <i className="fas fa-film"></i>
               <span>Reels</span>
             </a>
-            <a href="#" className="flex items-center space-x-2 hover:text-gray-400">
+            <a href="#" className="flex items-center space-x-4 hover:text-gray-400">
               <i className="fas fa-envelope"></i>
               <span>Messages</span>
             </a>
-            <a href="#" className="flex items-center space-x-2 hover:text-gray-400">
+            <a href="#" className="flex items-center space-x-4 hover:text-gray-400">
               <i className="fas fa-heart"></i>
               <span>Notifications</span>
             </a>
-            <a href="#" className="flex items-center space-x-2 hover:text-gray-400">
+            <a href="#" className="flex items-center space-x-4 hover:text-gray-400">
               <i className="fas fa-plus-square"></i>
               <span>Create</span>
             </a>
-            <a href="#" className="flex items-center space-x-2 hover:text-gray-400">
+            <a href="#" className="flex items-center space-x-4 hover:text-gray-400">
               <i className="fas fa-user"></i>
               <span>Profile</span>
             </a>
@@ -70,24 +70,20 @@ const UserProfile = () => {
       </div>
 
       {/* Main Content */}
-      <div className="w-4/5 p-4">
+      <div className="w-4/5 p-4 ml-40 mt-5">
         {/* Profile Header */}
-        <div className="flex items-center space-x-4 mb-6">
-          <img src={profile.profile_image} alt={profile.profile_name} className="w-32 h-32 rounded-full" />
-          <div>
+        <div className="flex space-x-4 mb-6">
+          <img src={profile.profile_image} alt={profile.profile_name} className="w-40 h-40 rounded-full" />
+          <div className='ml-10'>
+            <div className="flex space-x-4 mt-1 ml-10">
             <div className="text-2xl font-bold">{username}</div>
-            <div className="flex space-x-4 mt-2">
-              <button className="bg-gray-800 py-1 px-4 rounded">Edit Profile</button>
-              <button className="bg-gray-800 py-1 px-4 rounded">View archive</button>
-              <button className="bg-gray-800 py-1 px-4 rounded">
+              <button className="bg-black-rgba py-1 px-4 rounded">Edit Profile</button>
+              <button className="bg-black-rgba py-1 px-4 rounded">View archive</button>
+              <button className="bg-black-rgba py-1 px-4 rounded">
                 <i className="fas fa-cog"></i>
               </button>
             </div>
-          </div>
-        </div>
-
-        {/* Profile Stats */}
-        <div className="flex space-x-8 mb-6">
+            <div className="flex space-x-8 mt-8 ml-10">
           <div>
             <span className="font-bold">1</span> post
           </div>
@@ -97,7 +93,18 @@ const UserProfile = () => {
           <div>
             <span className="font-bold">{profile.following_count}</span> following
           </div>
+          </div>
+          <div className="flex mt-8 ml-10">
+            <span className='font-bold'>{profile.profile_name}</span>
+          </div>
         </div>
+        </div>
+
+        {/* Profile Stats */}
+        <div className="flex space-x-8 mb-6">
+        </div>
+
+        {/* </div> */}
 
         {/* Profile Name */}
         <div className="font-bold mb-6">{profile.name}</div>
