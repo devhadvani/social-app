@@ -14,7 +14,8 @@ from .serializers import (
     ProfileSerializer,Textserializer,
     PasswordResetRequestSerializer,
      PasswordResetSerializer,
-     FollowSerializer
+     FollowSerializer,
+     UserProfileSerializer
      )
 from django.urls import reverse
 from django.shortcuts import get_object_or_404
@@ -216,3 +217,13 @@ class FollowingListView(generics.ListAPIView):
         user_name = self.kwargs['name']
         user = get_object_or_404(User, name=user_name)
         return Follow.objects.filter(follower=user)
+
+class UserProfileAPIView(generics.ListAPIView):
+    serializer_class = UserProfileSerializer
+    # queryset = User.objects.all()
+
+    def get_queryset(self):
+        name = self.kwargs.get('name')
+        # return get_object_or_404(User,name=name)
+        print("dsf",User.objects.filter(name=name))
+        return User.objects.filter(name=name)

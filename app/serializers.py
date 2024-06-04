@@ -62,3 +62,19 @@ class FollowSerializer(serializers.ModelSerializer):
     class Meta:
         model = Follow
         fields = ['follower', 'following', 'created_at']
+
+class UserProfileSerializer(serializers.ModelSerializer):
+    bio = serializers.CharField(source="profile.bio")
+    profile_image = serializers.ImageField(source="profile.profile_image")
+    followers_count = serializers.SerializerMethodField()
+    following_count = serializers.SerializerMethodField()
+    profile_name = serializers.CharField(source="profile.name")
+
+    class Meta:
+        model = User
+        fields = ['name','bio','profile_image','followers_count','following_count','profile_name']
+
+    def get_followers_count(self,obj):
+        return Follow.objects.filter(following=obj).count()
+    def get_following_count(self,obj):
+        return Follow.objects.filter(follower=obj).count()
