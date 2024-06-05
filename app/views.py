@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .models import Test,Profile,Follow
+from .models import Test,Profile,Follow,Post, PostImage, Like, Comment, CommentLike
 from rest_framework import generics, permissions
 from datetime import timedelta
 from rest_framework import generics, status
@@ -17,8 +17,12 @@ from .serializers import (
      FollowSerializer,
      UserProfileSerializer,
      FollowersSerializer,
-     UserProfileListSerializer
+     UserProfileListSerializer,
+     PostSerializer, 
+     LikeSerializer,
+     CommentSerializer
      )
+from rest_framework.parsers import MultiPartParser, FormParser
 from django.urls import reverse
 from django.shortcuts import get_object_or_404
 from .token import EmailVerificationToken,password_reset_token
@@ -250,3 +254,45 @@ class UserProfileAPIView(generics.ListAPIView):
         # return get_object_or_404(User,name=name)
         print("dsf",User.objects.filter(name=name))
         return User.objects.filter(name=name)
+
+
+class PostCreateView(generics.ListCreateAPIView):
+    queryset = Post.objects.all()
+    serializer_class = PostSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    parser_classes = [MultiPartParser, FormParser]
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+class PostDetailView(generics.RetrieveAPIView):
+    queryset = Post.objects.all()
+    serializer_class = PostSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+class LikeCreateView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, pk):
+        post = Post.objects.get(pk=pk)
+        like, created = Like.objects.get_or_create(user=request.user, post=post)
+        if not created:
+            like.delete()
+            return Response({'status': 'post unliked'}, status=status.HTTP_204_NO_CONTENT)
+        return Response({'status': 'post liked'}, status=status.HTTP_201_CREATED)
+
+class CommentCreateView(generics.CreateAPIView):
+    queryset = Comment.objects.all()
+    serializer_class = CommentSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def perform_create(self, serializer):
+        post_id = self.kwargs.get('pk')
+        post = Post.objects.get(pk=post_id)
+        serializer.save(user=self.request.user, post=post)
+
+# class UserProfileView(generics.RetrieveAPIView):
+#     queryset = User.objects.all()
+#     serializer_class = UserProfileSerializer
+#     permission_classes = [permissions.IsAuthenticated]
+#     lookup_field = 'username'

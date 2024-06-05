@@ -4,6 +4,7 @@ import axios from 'axios';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import logo from '../assets/profile.svg';
 import {jwtDecode} from 'jwt-decode';
+import PostList from './PostList';
 
 const UserProfile = () => {
   const { username } = useParams();
@@ -161,7 +162,7 @@ const UserProfile = () => {
       <div className="w-4/5 p-4 ml-40 mt-5">
         {/* Profile Header */}
         <div className="flex space-x-4 mb-6">
-          <img src={profile.profile_image} alt={profile.profile_name} className="w-40 h-40 rounded-full" onError={(e) => { e.target.onerror = null; e.target.src = logo; }} />
+          <img src={profile.profile_image ? profile.profile_image : {logo}} alt={profile.profile_name} className="w-40 h-40 rounded-full" onError={(e) => { e.target.onerror = null; e.target.src = logo; }} />
           <div className='ml-10'>
             <div className="flex space-x-4 mt-1 ml-10">
               <div className="text-2xl font-bold">{username}</div>
@@ -169,13 +170,13 @@ const UserProfile = () => {
                 <>
                   <button className="bg-black-rgba py-1 px-4 rounded">Edit Profile</button>
                   <button className="bg-black-rgba py-1 px-4 rounded">View Archive</button>
-                </>
-              )}
               <button className="bg-black-rgba py-1 px-4 rounded">
                 <i className="fas fa-cog"></i>
               </button>
+                </>
+              )}
               {!isCurrentUser && (
-                <button className="bg-black-rgba py-1 px-4 rounded" onClick={() => profile.is_following ? unfollowUser(profile.id) : followUser(username)}>
+                <button  className={`py-1 px-4 rounded-lg mr-5 font-bold br-3 ${profile.is_following ? 'bg-black-rgba' : 'bg-sky-500'}`} onClick={() => profile.is_following ? unfollowUser(profile.id) : followUser(username)}>
                   {profile.is_following ? 'Following' : 'Follow'}
                 </button>
               )}
@@ -214,14 +215,20 @@ const UserProfile = () => {
             <div className="cursor-pointer">SAVED</div>
             <div className="cursor-pointer">TAGGED</div>
           </div>
-          <div className="grid grid-cols-3 gap-4">
-            <div className="col-span-1">
-              <img src="/path-to-your-image.jpg" alt="Post" className="w-full h-auto" />
-            </div>
+          <div>
+            <div className="mt-8">
+          <h3 className="text-xl mb-4">Posts</h3>
+          <PostList posts={profile.posts} />
+        </div>
             {/* Repeat for more posts */}
           </div>
         </div>
       </div>
+
+      {/* <div>
+          <PostList username={profile.id} />
+        </div> */}  
+
 
       {/* Followers Modal */}
       {showFollowersModal && (
@@ -239,11 +246,12 @@ const UserProfile = () => {
             onClick={() => setShowFollowersModal(false)}
           >
                   <img
-                    src={follower.profile_image}
+                    src={follower.profile_image ? follower.profile_image : logo}
                     alt={follower.profile_name}
-                    className="w-10 h-10 rounded-full"
-                    onError={(e) => { e.target.onerror = null; e.target.src = logo; }}
+                    className="w-12 h-12 rounded-full"
+                    onError={(e) => { e.target.onerror = null; e.target.src = {logo}; }}
                   />
+                  
                   <div >
                     <div className="font-bold text-white">{follower.name}</div>
                     <div className="text-gray-400">{follower.profile_name}</div>

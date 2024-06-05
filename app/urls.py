@@ -16,5 +16,10 @@ urlpatterns = [
     path('unfollow/<str:name>', UnfollowUserView.as_view(), name='unfollow-user'),
     path('followers/<str:name>/', FollowersListView.as_view(), name='followers-list'),
     path('following/<str:name>/', FollowingListView.as_view(), name='following-list'),
+    path('posts/', PostCreateView.as_view(), name='post-create'),
+    path('posts/<int:pk>/', PostDetailView.as_view(), name='post-detail'),
+    path('posts/<int:pk>/like/', LikeCreateView.as_view(), name='post-like'),
+    path('posts/<int:pk>/comment/', CommentCreateView.as_view(), name='post-comment'),
 ]
+
 

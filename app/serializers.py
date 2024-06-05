@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Test,Profile
+from .models import Test,Profile,Follow, Post, PostImage, Like, Comment, CommentLike
 
 class Textserializer(serializers.ModelSerializer):
     class Meta:
@@ -104,6 +104,41 @@ class UserProfileListSerializer(serializers.ModelSerializer):
             return Follow.objects.filter(follower=request.user, following=obj).exists()
         return False
 
+class PostImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PostImage
+        fields = ['id', 'image']
+
+class PostSerializer(serializers.ModelSerializer):
+    images = PostImageSerializer(many=True, read_only=True)
+    uploaded_images = serializers.ListField(
+        child=serializers.ImageField(write_only=True),
+        write_only=True
+    )
+    likes_count = serializers.SerializerMethodField()
+    comments_count = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Post
+        fields = ['id', 'user', 'caption', 'created_at', 'updated_at', 'images', 'uploaded_images', 'likes_count', 'comments_count']
+        read_only_fields = ['id', 'user', 'created_at', 'updated_at', 'images', 'likes_count', 'comments_count']
+
+    def get_likes_count(self, obj):
+        return obj.likes.count()
+
+    def get_comments_count(self, obj):
+        return obj.comments.count()
+
+    def create(self, validated_data):
+        uploaded_images = validated_data.pop('uploaded_images')
+        post = Post.objects.create(**validated_data)
+
+        for image in uploaded_images:
+            PostImage.objects.create(post=post, image=image)
+
+        return post
+
+
 class UserProfileSerializer(serializers.ModelSerializer):
     bio = serializers.CharField(source="profile.bio")
     profile_image = serializers.ImageField(source="profile.profile_image")
@@ -111,11 +146,11 @@ class UserProfileSerializer(serializers.ModelSerializer):
     following_count = serializers.SerializerMethodField()
     profile_name = serializers.CharField(source="profile.name")
     is_following = serializers.SerializerMethodField()
+    posts = PostSerializer(many=True, read_only=True)
 
     class Meta:
         model = User
-        fields = ['id','name', 'bio', 'profile_image', 'followers_count', 'following_count', 'profile_name', 'is_following']
-
+        fields = ['id', 'name', 'bio', 'profile_image', 'followers_count', 'following_count', 'profile_name', 'is_following', 'posts']
     def get_followers_count(self, obj):
         return Follow.objects.filter(following=obj).count()
 
@@ -127,3 +162,23 @@ class UserProfileSerializer(serializers.ModelSerializer):
         if request and request.user.is_authenticated:
             return Follow.objects.filter(follower=request.user, following=obj).exists()
         return False
+
+
+
+
+class LikeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Like
+        fields = ['id', 'user', 'post', 'created_at']
+        read_only_fields = ['id', 'created_at']
+
+class CommentSerializer(serializers.ModelSerializer):
+    likes_count = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Comment
+        fields = ['id', 'user', 'post', 'text', 'created_at', 'updated_at', 'likes_count']
+        read_only_fields = ['id', 'user', 'post', 'created_at', 'updated_at']
+
+    def get_likes_count(self, obj):
+        return obj.likes.count()
