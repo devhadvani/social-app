@@ -3,6 +3,7 @@ import './App.css'
 import UserProfile from './components/UserProfile'
 // import Home from './components/Home'
 import { BrowserRouter as Router, Route,Routes} from 'react-router-dom';
+import LoginPage from './components/auth/LoginPage';
 function App() {
 
   return (
@@ -14,6 +15,7 @@ function App() {
     <Router>
       <Routes>
         <Route path="/:username" element={<UserProfile />} />
+        <Route path="/login" element={<LoginPage />} />
       </Routes>
     </Router>
     </>

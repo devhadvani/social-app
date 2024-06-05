@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from .models import Test,Profile,Follow
-from rest_framework import generics
+from rest_framework import generics, permissions
 from datetime import timedelta
 from rest_framework import generics, status
 from rest_framework.response import Response
@@ -15,7 +15,9 @@ from .serializers import (
     PasswordResetRequestSerializer,
      PasswordResetSerializer,
      FollowSerializer,
-     UserProfileSerializer
+     UserProfileSerializer,
+     FollowersSerializer,
+     UserProfileListSerializer
      )
 from django.urls import reverse
 from django.shortcuts import get_object_or_404
@@ -180,7 +182,10 @@ class FollowUserView(generics.CreateAPIView):
     def create(self, request, *args, **kwargs):
         following_name = request.data.get('following')
         print("name",following_name)
+        print("following",request.user)
+        print("following",self.request.user)
         following = get_object_or_404(User, name=following_name)
+        print("SD",following)
         follow, created = Follow.objects.get_or_create(follower=request.user, following=following)
         if not created:
             return Response({"detail": "You are already following this user."}, status=status.HTTP_400_BAD_REQUEST)
@@ -189,40 +194,58 @@ class FollowUserView(generics.CreateAPIView):
 class UnfollowUserView(generics.DestroyAPIView):
     queryset = Follow.objects.all()
     serializer_class = FollowSerializer
+    permission_classes = [permissions.IsAuthenticated]
     # permission_classes = [permissions.IsAuthenticated]
 
     def delete(self, request, *args, **kwargs):
-        following_name = request.data.get('following')
-        following = get_object_or_404(User, name=following_name)
-        follow = Follow.objects.filter(follower=request.user, following=following).first()
+        following_name = kwargs.get('name')
+        print("fsd",following_name)
+        # following = get_object_or_404(User, name=following_name)
+        print("following",request.user)
+        print("following",self.request.user.id)
+        follow = Follow.objects.filter(follower=self.request.user.id, following=following_name).first()
+        print("foolow",follow)
         if follow:
             follow.delete()
-            return Response({"detail": "Successfully unfollowed user."}, status=status.HTTP_204_NO_CONTENT)
+            return Response({"detail": "Successfully unfollowed user."})
         return Response({"detail": "You are not following this user."}, status=status.HTTP_400_BAD_REQUEST)
 
+
 class FollowersListView(generics.ListAPIView):
-    serializer_class = FollowSerializer
-    # permission_classes = [permissions.IsAuthenticated]
+    serializer_class = UserProfileListSerializer
 
     def get_queryset(self):
-        user_name = self.kwargs['name']
-        user = get_object_or_404(User, name=user_name)
-        return Follow.objects.filter(following=user)
+        name = self.kwargs['name']
+        user = get_object_or_404(User, name=name)
+        return User.objects.filter(following__following=user)
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
 
 class FollowingListView(generics.ListAPIView):
-    serializer_class = FollowSerializer
-    # permission_classes = [permissions.IsAuthenticated]
+    serializer_class = UserProfileListSerializer
 
     def get_queryset(self):
-        user_name = self.kwargs['name']
-        user = get_object_or_404(User, name=user_name)
-        return Follow.objects.filter(follower=user)
+        name = self.kwargs['name']
+        user = get_object_or_404(User, name=name)
+        return User.objects.filter(followers__follower=user)
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
 
 class UserProfileAPIView(generics.ListAPIView):
     serializer_class = UserProfileSerializer
     # queryset = User.objects.all()
 
     def get_queryset(self):
+        # print("sdf",request.user)
+        # print("following",request.user)
+        print("following",self.request.user.id)
         name = self.kwargs.get('name')
         # return get_object_or_404(User,name=name)
         print("dsf",User.objects.filter(name=name))

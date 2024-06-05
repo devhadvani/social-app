@@ -63,6 +63,16 @@ class FollowSerializer(serializers.ModelSerializer):
         model = Follow
         fields = ['follower', 'following', 'created_at']
 
+class FollowersSerializer(serializers.ModelSerializer):
+    profile_name = serializers.SerializerMethodField()
+    class Meta:
+        model = Follow
+        fields = ['follower', 'following', 'created_at','profile_name']
+
+    def get_profile_name(self,obj):
+        print("sdfsd",obj)
+        return User.objects.filter(id=obj)
+
 class UserProfileSerializer(serializers.ModelSerializer):
     bio = serializers.CharField(source="profile.bio")
     profile_image = serializers.ImageField(source="profile.profile_image")
@@ -78,3 +88,42 @@ class UserProfileSerializer(serializers.ModelSerializer):
         return Follow.objects.filter(following=obj).count()
     def get_following_count(self,obj):
         return Follow.objects.filter(follower=obj).count()
+
+class UserProfileListSerializer(serializers.ModelSerializer):
+    profile_image = serializers.ImageField(source="profile.profile_image", read_only=True)
+    profile_name = serializers.CharField(source="profile.name", read_only=True)
+    is_following = serializers.SerializerMethodField()
+
+    class Meta:
+        model = User
+        fields = ['id','name', 'profile_image', 'profile_name','is_following']
+
+    def get_is_following(self, obj):
+        request = self.context.get('request', None)
+        if request and request.user.is_authenticated:
+            return Follow.objects.filter(follower=request.user, following=obj).exists()
+        return False
+
+class UserProfileSerializer(serializers.ModelSerializer):
+    bio = serializers.CharField(source="profile.bio")
+    profile_image = serializers.ImageField(source="profile.profile_image")
+    followers_count = serializers.SerializerMethodField()
+    following_count = serializers.SerializerMethodField()
+    profile_name = serializers.CharField(source="profile.name")
+    is_following = serializers.SerializerMethodField()
+
+    class Meta:
+        model = User
+        fields = ['id','name', 'bio', 'profile_image', 'followers_count', 'following_count', 'profile_name', 'is_following']
+
+    def get_followers_count(self, obj):
+        return Follow.objects.filter(following=obj).count()
+
+    def get_following_count(self, obj):
+        return Follow.objects.filter(follower=obj).count()
+
+    def get_is_following(self, obj):
+        request = self.context.get('request', None)
+        if request and request.user.is_authenticated:
+            return Follow.objects.filter(follower=request.user, following=obj).exists()
+        return False
