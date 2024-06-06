@@ -2,7 +2,11 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.models import Group
 
+from django.contrib.auth import get_user_model
 from .models import User, Profile, Follow, Post, PostImage, Like, Comment, CommentLike
+
+User = get_user_model()
+
 
 class UserAdmin(BaseUserAdmin):
     list_display = ('email', 'is_staff', 'is_superuser')

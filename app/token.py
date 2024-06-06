@@ -11,6 +11,7 @@ class EmailVerificationToken(Token):
         token = cls()
         token.payload['user_id'] = user.id
         token.payload['email'] = user.email
+        token.payload['name'] = user.name
         token.payload['token_type'] = cls.token_type
         return token
 

@@ -2,7 +2,11 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import {Link, useNavigate } from 'react-router-dom';
 import { useLocation } from "react-router-dom";
+import {jwtDecode} from 'jwt-decode';
+import useAuthCheck from './useAuthCheck';
+
 const LoginPage = () => {
+    useAuthCheck();
 
     const location = useLocation();
     const activate_msg = location.state;
@@ -17,8 +21,13 @@ const LoginPage = () => {
 
     useEffect(() => {
         const token = localStorage.getItem('token');
+
+        // const name = decoded.name;
+        
         if (token) {
-            navigate('/dashboard');
+            const decoded = jwtDecode(token);
+            console.log(decoded);
+            navigate('/'+decoded.name);
         }
     }, [navigate]);
 
@@ -36,9 +45,10 @@ const LoginPage = () => {
             
             // Store the token in localStorage upon successful login
             localStorage.setItem('token', response.data.access);
-
+            const decoded = jwtDecode(response.data.access);
+            console.log(decoded)
             // Redirect user to the dashboard
-            // navigate("/");
+            navigate('/'+decoded.name);
         } catch (error) {
             if (error.response && error.response.data) {
                 console.error('Login failed', error.response.data);

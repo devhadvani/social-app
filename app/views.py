@@ -68,6 +68,7 @@ class CustomAccessToken(AccessToken):
         token = super().for_user(user)
         # Add custom user information to the token payload
         token['email'] = user.email
+        token['name'] = user.name
         # token['username'] = user.username
         # Add any other fields you want
         return token
@@ -81,6 +82,8 @@ class CustomRefreshToken(RefreshToken):
         token = super().for_user(user)
         # Add custom user information to the token payload
         token['email'] = user.email
+        token['name'] = user.name
+        # token['email'] = user.email
         # token['username'] = user.username
         # Add any other fields you want
         return token
