@@ -10,7 +10,7 @@ const Home = () => {
     { name: 'i_am_vaibhlo_manjsa', status: 'New to Instagram' },
     { name: 'maradiyagirihbhai', status: 'Suggested for you' },
     { name: 'mali__chora_', status: 'New to Instagram' },
-    { name: 'my_colourful_canvas_14', status: 'New to Instagram' },
+  
   ];
 
   const posts = [
