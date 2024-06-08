@@ -73,7 +73,7 @@ class FollowersSerializer(serializers.ModelSerializer):
         print("sdfsd",obj)
         return User.objects.filter(id=obj)
 
-class UserProfileSerializer(serializers.ModelSerializer):
+class UserProfileBasicSerializer(serializers.ModelSerializer):
     bio = serializers.CharField(source="profile.bio")
     profile_image = serializers.ImageField(source="profile.profile_image")
     followers_count = serializers.SerializerMethodField()
@@ -183,3 +183,44 @@ class CommentSerializer(serializers.ModelSerializer):
     def get_likes_count(self, obj):
         return obj.likes.count()
 
+
+class HomePostSerializer(serializers.ModelSerializer):
+    images = PostImageSerializer(many=True, read_only=True)
+    uploaded_images = serializers.ListField(
+        child=serializers.ImageField(write_only=True),
+        write_only=True
+    )
+    likes_count = serializers.SerializerMethodField()
+    is_liked = serializers.SerializerMethodField()
+    comments_count = serializers.SerializerMethodField()
+    user_profile = UserProfileBasicSerializer(source='user', read_only=True)  # Include user information
+
+    class Meta:
+        model = Post
+        fields = ['id', 'user', 'caption', 'created_at', 'updated_at', 'images', 'uploaded_images', 'likes_count', 'comments_count','user_profile','is_liked']
+        read_only_fields = ['id', 'user', 'created_at', 'updated_at', 'images', 'likes_count', 'comments_count','user_profile','is_liked']
+
+    def get_likes_count(self, obj):
+        return obj.likes.count()
+
+    def get_is_liked(self, obj):
+        request = self.context.get('request', None)
+        if request is None or not request.user.is_authenticated:
+            # print("here")
+            return False
+        # print("sdf",obj.id)
+        # print("hgh",obj.likes.filter(id=request.user.id))
+        print("sdf",Like.objects.filter(user=request.user.id, post=obj).exists())
+        return Like.objects.filter(user=request.user.id, post=obj).exists()
+
+    def get_comments_count(self, obj):
+        return obj.comments.count()
+
+    def create(self, validated_data):
+        uploaded_images = validated_data.pop('uploaded_images')
+        post = Post.objects.create(**validated_data)
+
+        for image in uploaded_images:
+            PostImage.objects.create(post=post, image=image)
+
+        return post

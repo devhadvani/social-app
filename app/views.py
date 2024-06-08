@@ -20,7 +20,8 @@ from .serializers import (
      UserProfileListSerializer,
      PostSerializer, 
      LikeSerializer,
-     CommentSerializer
+     CommentSerializer,
+     HomePostSerializer
      )
 from rest_framework.parsers import MultiPartParser, FormParser
 from django.urls import reverse
@@ -293,6 +294,16 @@ class CommentCreateView(generics.CreateAPIView):
         post_id = self.kwargs.get('pk')
         post = Post.objects.get(pk=post_id)
         serializer.save(user=self.request.user, post=post)
+
+class HomeFeedView(generics.ListAPIView):
+    serializer_class = HomePostSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        following_users = Follow.objects.filter(follower=user).values_list('following', flat=True)
+        return Post.objects.filter(user__in=following_users).order_by('-created_at')
+
 
 # class UserProfileView(generics.RetrieveAPIView):
 #     queryset = User.objects.all()
