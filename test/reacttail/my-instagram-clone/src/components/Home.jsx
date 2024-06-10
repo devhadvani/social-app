@@ -226,10 +226,10 @@ const Home = () => {
         <div className="flex items-center space-x-4 mb-4">
           <div className="w-10 h-10 rounded-full bg-gray-700"></div>
           <div>
-            <div className="font-bold">dev</div>
+            <div className="font-bold">_dev.dev</div>
             <div className="text-gray-500">Dev Hadvani</div>
           </div>
-          <a href="#" className="text-blue-500">Switch</a>
+          {/* <a href="#" className="text-blue-500">Switch</a> */}
         </div>
 
         <div className="text-gray-500 mb-2">Suggested for you</div>
