@@ -33,6 +33,7 @@ const Home = () => {
     axios.get('http://127.0.0.1:8000/home-posts/', config)
       .then(response => {
         setPosts(response.data);
+        console.log(response.data)
         // Initialize comment input state for each post
         const initialCommentInputs = {};
         response.data.forEach(post => {
@@ -156,7 +157,7 @@ const Home = () => {
                   <img src={post.user_profile.profile_image || logo} alt="profile" className="w-10 h-10 rounded-full bg-gray-700" />
                   <div className="flex-1">
                     <Link to={`/${post.user_profile.name}`}>
-                      <span className="font-bold">{post.user_profile.profile_name}</span>
+                      <span className="font-bold">{post.user_profile.name}</span>
                     </Link>
                   </div>
                   <span className="text-gray-500">
@@ -193,7 +194,7 @@ const Home = () => {
                   <span className="font-bold">{post.likes_count}</span> likes
                 </div>
                 <div className="mt-4">
-                  <span className="font-bold">{post.user_profile.profile_name}</span> {post.caption}
+                  <span className="font-bold">{post.user_profile.name}</span> {post.caption}
                 </div>
                 {/* View Comments Button */}
                 <button>Show {post.comments_count} Comments</button>
