@@ -295,6 +295,14 @@ class CommentCreateView(generics.CreateAPIView):
         post = Post.objects.get(pk=post_id)
         serializer.save(user=self.request.user, post=post)
 
+class PostCommentsAPIView(generics.ListAPIView):
+    serializer_class = CommentSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        post_id = self.kwargs['post_id']
+        return Comment.objects.filter(post_id=post_id)
+
 class HomeFeedView(generics.ListAPIView):
     serializer_class = HomePostSerializer
     permission_classes = [permissions.IsAuthenticated]

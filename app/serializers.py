@@ -117,6 +117,7 @@ class PostSerializer(serializers.ModelSerializer):
     )
     likes_count = serializers.SerializerMethodField()
     comments_count = serializers.SerializerMethodField()
+    # comments = PostImageSerializer(many=True, read_only=True)
 
     class Meta:
         model = Post
@@ -174,10 +175,11 @@ class LikeSerializer(serializers.ModelSerializer):
 
 class CommentSerializer(serializers.ModelSerializer):
     likes_count = serializers.SerializerMethodField()
+    user_profile = UserProfileBasicSerializer(source='user', read_only=True)
 
     class Meta:
         model = Comment
-        fields = ['id', 'user', 'post', 'text', 'created_at', 'updated_at', 'likes_count']
+        fields = ['id', 'user', 'post', 'text', 'created_at', 'updated_at', 'likes_count','user_profile']
         read_only_fields = ['id', 'user', 'post', 'created_at', 'updated_at']
 
     def get_likes_count(self, obj):
@@ -193,6 +195,7 @@ class HomePostSerializer(serializers.ModelSerializer):
     likes_count = serializers.SerializerMethodField()
     is_liked = serializers.SerializerMethodField()
     comments_count = serializers.SerializerMethodField()
+    # comments = CommentSerializer(many=True, read_only=True)
     user_profile = UserProfileBasicSerializer(source='user', read_only=True)  # Include user information
 
     class Meta:
