@@ -1,12 +1,45 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import {jwtDecode} from 'jwt-decode';
+
 const SideBar = () => {
     const navigate = useNavigate();
     const token = localStorage.getItem('token');
     const decoded = jwtDecode(token);
     const name = decoded.name;
+
+    const [notificationCount, setNotificationCount] = useState(0);
+
+    useEffect(() => {
+        const ws = new WebSocket('ws://localhost:8000/ws/notifications/');
+        
+        ws.onopen = () => {
+            console.log('WebSocket connection established');
+        };
+
+        ws.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+            console.log('Received data:', event.data);
+
+            // Update the notification count
+            setNotificationCount(prevCount => prevCount + 1);
+        };
+
+        ws.onclose = (event) => {
+            console.error('WebSocket closed unexpectedly', event);
+        };
+
+        ws.onerror = (error) => {
+            console.error('WebSocket encountered an error:', error);
+        };
+
+        // Cleanup function to close the WebSocket connection when the component unmounts
+        return () => {
+            ws.close();
+        };
+    }, []);
+
     const handleLogout = () => {
         localStorage.removeItem('token');
         navigate('/login');
@@ -39,13 +72,13 @@ const SideBar = () => {
                     </Link>
                     <Link to="/notifications" className="flex items-center space-x-4 hover:text-gray-400">
                         <i className="fas fa-heart"></i>
-                        <span>Notifications</span>
+                        <span>Notifications ({notificationCount})</span>
                     </Link>
                     <Link to="/create" className="flex items-center space-x-4 hover:text-gray-400">
                         <i className="fas fa-plus-square"></i>
                         <span>Create</span>
                     </Link>
-                    <Link to={name} className="flex items-center space-x-4 hover:text-gray-400">
+                    <Link to={`/${name}`} className="flex items-center space-x-4 hover:text-gray-400">
                         <i className="fas fa-user"></i>
                         <span>Profile</span>
                     </Link>

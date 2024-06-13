@@ -3,21 +3,21 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 
 class NotificationConsumer(AsyncWebsocketConsumer):
     async def connect(self):
-        # self.user = self.scope["user"]
-        # print(request.user)
-        # if self.user.is_authenticated:
-        await self.channel_layer.group_add(
-            f"user_1",
-            self.channel_name
-        )
-        await self.accept()
-        print(f"User connected")
-        # else:
-            # await self.close()
-            # print("Unauthenticated user connection closed")
+        print(self.scope)
+        self.user = self.scope.get("user")
+        if self.user and self.user.is_authenticated:
+            await self.channel_layer.group_add(
+                f"user_{self.user.id}",
+                self.channel_name
+            )
+            await self.accept()
+            print(f"User {self.user.id} connected")
+        else:
+            await self.close()
+            print("Unauthenticated user connection closed")
 
     async def disconnect(self, close_code):
-        if self.user.is_authenticated:
+        if self.user and self.user.is_authenticated:
             await self.channel_layer.group_discard(
                 f"user_{self.user.id}",
                 self.channel_name
