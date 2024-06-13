@@ -5,6 +5,7 @@ import UserProfile from './components/UserProfile'
 import { BrowserRouter as Router, Route,Routes} from 'react-router-dom';
 import LoginPage from './components/auth/LoginPage';
 import Home from './components/Home';
+import Notifications from './components/Notifications';
 function App() {
 
   return (
@@ -18,6 +19,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/:username" element={<UserProfile />} />
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/notifications" element={<Notifications />} />
       </Routes>
     </Router>
     </>

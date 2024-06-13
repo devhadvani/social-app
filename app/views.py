@@ -181,6 +181,8 @@ class PasswordResetConfirmAPIView(APIView):
                 return Response({'message': 'Password reset successfully'}, status=status.HTTP_200_OK)
             return Response({'error': 'Invalid token'}, status=status.HTTP_400_BAD_REQUEST)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
 
 class FollowUserView(generics.CreateAPIView):
     queryset = Follow.objects.all()
@@ -189,15 +191,46 @@ class FollowUserView(generics.CreateAPIView):
 
     def create(self, request, *args, **kwargs):
         following_name = request.data.get('following')
-        print("name",following_name)
-        print("following",request.user)
-        print("following",self.request.user)
         following = get_object_or_404(User, name=following_name)
-        print("SD",following)
         follow, created = Follow.objects.get_or_create(follower=request.user, following=following)
         if not created:
             return Response({"detail": "You are already following this user."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Send a notification
+        print("before")
+        channel_layer = get_channel_layer()
+        print(channel_layer)
+        if channel_layer:
+            async_to_sync(channel_layer.group_send)(
+                f"user_1",
+                {
+                    'type': 'send_notification',
+                    'notification': f'{request.user.name} has started following you.'
+                }
+            )
+            print("after")
+        else:
+            print("Channel layer is None")
+
         return Response({"detail": "Successfully followed user."}, status=status.HTTP_201_CREATED)
+
+
+# class FollowUserView(generics.CreateAPIView):
+#     queryset = Follow.objects.all()
+#     serializer_class = FollowSerializer
+#     # permission_classes = [permissions.IsAuthenticated]
+
+#     def create(self, request, *args, **kwargs):
+#         following_name = request.data.get('following')
+#         print("name",following_name)
+#         print("following",request.user)
+#         print("following",self.request.user)
+#         following = get_object_or_404(User, name=following_name)
+#         print("SD",following)
+#         follow, created = Follow.objects.get_or_create(follower=request.user, following=following)
+#         if not created:
+#             return Response({"detail": "You are already following this user."}, status=status.HTTP_400_BAD_REQUEST)
+#         return Response({"detail": "Successfully followed user."}, status=status.HTTP_201_CREATED)
 
 class UnfollowUserView(generics.DestroyAPIView):
     queryset = Follow.objects.all()

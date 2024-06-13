@@ -108,6 +108,12 @@ const Home = () => {
           }
           return post;
         }));
+
+        // If the modal is open and showing the current post, update the comments state
+        if (modalIsOpen && currentPost && currentPost.id === postId) {
+          setComments([...comments, response.data]);
+        }
+
         setCommentInputs(prevState => ({
           ...prevState,
           [postId]: {
@@ -335,7 +341,7 @@ const Home = () => {
                     value={commentInputs[currentPost.id]?.text} 
                     onChange={(e) => handleCommentChange(currentPost.id, e)} 
                     placeholder="Add a comment..." 
-                    className="w-full p-2 mr-2 rounded border border-gray-800 bg-white focus:outline-none"
+                    className="w-full p-2 mr-2 rounded border border-gray-800 bg-white text-black focus:outline-none"
                   />
                   {commentInputs[currentPost.id]?.isTyping && (
                     <button 
@@ -346,7 +352,7 @@ const Home = () => {
                     </button>
                   )}
                 </div>
-              </div>
+              </div>  
             </div>
           </div>
         </Modal>
