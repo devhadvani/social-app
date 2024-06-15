@@ -109,7 +109,7 @@ const Home = () => {
           return post;
         }));
 
-        // If the modal is open and showing the current post, update the comments state
+      
         if (modalIsOpen && currentPost && currentPost.id === postId) {
           setComments([...comments, response.data]);
         }
