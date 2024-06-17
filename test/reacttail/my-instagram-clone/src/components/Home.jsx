@@ -8,10 +8,12 @@ import { Link } from 'react-router-dom';
 import { formatDistanceToNow, parseISO } from 'date-fns';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
+import useAuthCheck from './auth/useAuthCheck';
 
 Modal.setAppElement('#root');  // Set the root element for the modal
 
 const Home = () => {
+  useAuthCheck();
   const [posts, setPosts] = useState([]);
   const [commentInputs, setCommentInputs] = useState({});
   const [modalIsOpen, setModalIsOpen] = useState(false);

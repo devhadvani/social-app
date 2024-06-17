@@ -2,12 +2,16 @@ import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import {jwtDecode} from 'jwt-decode';
+import useAuthCheck from './auth/useAuthCheck';
 
 const SideBar = () => {
     const navigate = useNavigate();
     const token = localStorage.getItem('token');
-    const decoded = jwtDecode(token);
-    const name = decoded.name;
+    let name = ''
+    if (token){
+        const decoded = jwtDecode(token);
+        name = decoded.name;
+    }
 
     const [notificationCount, setNotificationCount] = useState(0);
 
