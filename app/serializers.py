@@ -236,7 +236,7 @@ class StoryImageSerializer(serializers.ModelSerializer):
 
 class StorySerializer(serializers.ModelSerializer):
     images = StoryImageSerializer(many=True, read_only=True)
-    user = serializers.StringRelatedField(read_only=True)
+    user = UserProfileBasicSerializer(read_only=True)
 
     class Meta:
         model = Story

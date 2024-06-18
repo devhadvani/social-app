@@ -18,7 +18,8 @@ const Home = () => {
   const [commentInputs, setCommentInputs] = useState({});
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [currentPost, setCurrentPost] = useState(null);
-  const [comments, setComments] = useState([]); // New state for storing comments of a specific post
+  const [comments, setComments] = useState([]);
+  const [stories, setStories] = useState([]); // New state for storing stories
 
   const suggestedUsers = [
     { name: 'bharadavarasiklal', status: 'New to Instagram' },
@@ -49,8 +50,26 @@ const Home = () => {
       });
   };
 
+  const fetchStories = () => {
+    const token = localStorage.getItem('token');
+    const config = {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    };
+
+    axios.get('http://127.0.0.1:8000/following-stories/', config)
+      .then(response => {
+        setStories(response.data);
+      })
+      .catch(error => {
+        console.error("There was an error fetching the stories!", error);
+      });
+  };
+
   useEffect(() => {
     fetchPosts();
+    fetchStories(); // Fetch stories when the component mounts
   }, []);
 
   const handleLike = (postId) => {
@@ -198,8 +217,10 @@ const Home = () => {
       <div className="w-6/12 p-4 ml-80">
         <div className="space-y-4">
           <div className="flex space-x-4 overflow-x-auto">
-            {['savan', 'cyberknight', 'clarify', 'deep', 'ahir_sir', 'uday', 'jignesh'].map((user, index) => (
-              <div key={index} className="w-20 h-20 rounded-full bg-gray-800"></div>
+            {stories.map(story => (
+              <div key={story.id} className="w-20 h-20 rounded-full bg-gray-800 flex items-center justify-center">
+                <img src={story.user.profile_image || logo} alt="story" className="w-18 h-18 rounded-full object-cover" />
+              </div>
             ))}
           </div>
           <div className="w-3/4 ml-20">
@@ -285,7 +306,7 @@ const Home = () => {
           onRequestClose={closeModal}
           contentLabel="Post Details"
           className="fixed inset-0 flex items-center justify-center p-4 bg-black bg-opacity-75"
-          overlayClassName="fixed inset-0 bg-black bg-opacity-75" // For overlay click to close
+          overlayClassName="fixed inset-0 bg-black bg-opacity-75"
         >
           <div className="bg-black text-white rounded-lg overflow-hidden w-full max-w-4xl h-4/5">
             <div className="flex h-full">
@@ -328,8 +349,8 @@ const Home = () => {
                           <span className="text-gray-400 flex">{comment.text}</span> 
                         </div>
                         <span className="text-gray-500">
-                  {formatDistanceToNow(parseISO(comment.created_at), { addSuffix: true })}
-                </span>
+                          {formatDistanceToNow(parseISO(comment.created_at), { addSuffix: true })}
+                        </span>
                         <button onClick={() => handleCommentLike(comment.id)} className="ml-auto">
                           <i className={`fas fa-heart ${comment.is_liked ? 'text-red-500' : ''}`}></i>
                         </button>
