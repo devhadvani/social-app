@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .models import Test,Profile,Follow,Post, PostImage, Like, Comment, CommentLike
+from .models import Test,Profile,Follow,Post, PostImage, Like, Comment, CommentLike, Story, StoryImage
 from rest_framework import generics, permissions
 from datetime import timedelta
 from rest_framework import generics, status
@@ -21,7 +21,9 @@ from .serializers import (
      PostSerializer, 
      LikeSerializer,
      CommentSerializer,
-     HomePostSerializer
+     HomePostSerializer,
+     StoryImageSerializer,
+     StorySerializer
      )
 from rest_framework.parsers import MultiPartParser, FormParser
 from django.urls import reverse
@@ -345,6 +347,28 @@ class HomeFeedView(generics.ListAPIView):
         following_users = Follow.objects.filter(follower=user).values_list('following', flat=True)
         return Post.objects.filter(user__in=following_users).order_by('-created_at')
 
+
+class StoryListCreateView(generics.ListCreateAPIView):
+    queryset = Story.objects.all()
+    serializer_class = StorySerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+class StoryDetailView(generics.RetrieveDestroyAPIView):
+    queryset = Story.objects.all()
+    serializer_class = StorySerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+class FollowingStoryListView(generics.ListAPIView):
+    serializer_class = StorySerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        following_users = user.following.values_list('following', flat=True)
+        return Story.objects.filter(user__in=following_users).order_by('-created_at')
 
 # class UserProfileView(generics.RetrieveAPIView):
 #     queryset = User.objects.all()

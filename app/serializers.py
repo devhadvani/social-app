@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Test,Profile,Follow, Post, PostImage, Like, Comment, CommentLike
+from .models import Test,Profile,Follow, Post, PostImage, Like, Comment, CommentLike, Story,StoryImage
 
 class Textserializer(serializers.ModelSerializer):
     class Meta:
@@ -227,3 +227,23 @@ class HomePostSerializer(serializers.ModelSerializer):
             PostImage.objects.create(post=post, image=image)
 
         return post
+
+
+class StoryImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = StoryImage
+        fields = ['id', 'image', 'created_at']
+
+class StorySerializer(serializers.ModelSerializer):
+    images = StoryImageSerializer(many=True, read_only=True)
+    user = serializers.StringRelatedField(read_only=True)
+
+    class Meta:
+        model = Story
+        fields = ['id', 'user', 'created_at', 'expires_at', 'images']
+
+    def create(self, validated_data):
+        request = self.context.get('request')
+        user = request.user
+        story = Story.objects.create(user=user, **validated_data)
+        return story

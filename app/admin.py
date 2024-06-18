@@ -3,7 +3,7 @@ from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.models import Group
 
 from django.contrib.auth import get_user_model
-from .models import User, Profile, Follow, Post, PostImage, Like, Comment, CommentLike
+from .models import User, Profile, Follow, Post, PostImage, Like, Comment, CommentLike, Story, StoryImage
 
 User = get_user_model()
 
@@ -64,3 +64,5 @@ admin.site.register(PostImage, PostImageAdmin)
 admin.site.register(Like, LikeAdmin)
 admin.site.register(Comment, CommentAdmin)
 admin.site.register(CommentLike, CommentLikeAdmin)
+admin.site.register(Story)
+admin.site.register(StoryImage)
