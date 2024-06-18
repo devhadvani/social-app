@@ -9,6 +9,7 @@ import { formatDistanceToNow, parseISO } from 'date-fns';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import useAuthCheck from './auth/useAuthCheck';
+import StoryViewer from './StoryViewer';
 
 Modal.setAppElement('#root');  // Set the root element for the modal
 
@@ -20,6 +21,8 @@ const Home = () => {
   const [currentPost, setCurrentPost] = useState(null);
   const [comments, setComments] = useState([]);
   const [stories, setStories] = useState([]); // New state for storing stories
+  const [isStoryViewerOpen, setIsStoryViewerOpen] = useState(false); // State for story viewer modal
+  const [currentStoryUserId, setCurrentStoryUserId] = useState(null);
 
   const suggestedUsers = [
     { name: 'bharadavarasiklal', status: 'New to Instagram' },
@@ -211,18 +214,32 @@ const Home = () => {
     setCurrentPost(null);
   };
 
+  const openStoryViewer = (userId) => {
+    setCurrentStoryUserId(userId);
+    setIsStoryViewerOpen(true);
+  };
+
+  const closeStoryViewer = () => {
+    setIsStoryViewerOpen(false);
+    setCurrentStoryUserId(null);
+  };
+
   return (
     <div className="bg-black min-h-screen text-white flex">
       <SideBar />
       <div className="w-6/12 p-4 ml-80">
         <div className="space-y-4">
           <div className="flex space-x-4 overflow-x-auto">
-            {stories.map(story => (
-              <div key={story.id} className="w-20 h-20 rounded-full bg-gray-800 flex items-center justify-center">
-                <img src={story.user.profile_image || logo} alt="story" className="w-18 h-18 rounded-full object-cover" />
+          {stories.map((story, index) => (
+              <div key={index} onClick={() => openStoryViewer(story.id)} className="cursor-pointer">
+                <img src={story.user.profile_image || logo} alt="profile" className="w-16 h-16 rounded-full border-2 border-red-500" />
+                <p className="text-white text-center text-xs mt-1">{story.username}</p>
               </div>
             ))}
           </div>
+
+
+          
           <div className="w-3/4 ml-20">
             {posts.map(post => (
               <div key={post.id} className="bg-black p-4 rounded-lg mb-4">
@@ -299,6 +316,12 @@ const Home = () => {
         ))}
       </div>
 
+      <StoryViewer
+        isOpen={isStoryViewerOpen}
+        onClose={closeStoryViewer}
+        userId={currentStoryUserId}
+      >    
+</StoryViewer> 
       {/* Modal */}
       {currentPost && (
         <Modal
