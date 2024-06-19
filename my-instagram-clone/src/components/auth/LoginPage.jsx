@@ -87,7 +87,7 @@ const LoginPage = () => {
                         value={formData.password}
                         required
                     />
-                    <button className="btn btn-primary" type="submit" onClick={handleSubmit}>Login</button>
+                    <button className="btn btn-primary" type="submit" onClick={handleSubmit}>Login to the future</button>
                     {/* <Link to="/reset-password">Forget Password ?</Link> */}
                 </form>
             

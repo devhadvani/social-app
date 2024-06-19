@@ -45,7 +45,14 @@ class UserRegistrationAPIView(generics.CreateAPIView):
         user = serializer.save()
         token = EmailVerificationToken.for_user(user)
         verification_link = f"http://{self.request.get_host()}/verify-email/{str(token)}/"
-        send_verification_email.delay(user.email,verification_link)
+        # send_verification_email.delay(user.email,verification_link)
+        send_mail(
+            'Verify your email',
+            f'Click the link to verify your email: {verification_link}',
+            settings.DEFAULT_FROM_EMAIL,
+            [user.email],
+            fail_silently=False,
+            )
         return Response({'message': 'Account created successfully , please check your email and verify your email'}, status=status.HTTP_200_OK)
 
 class EmailVerificationAPIView(APIView):

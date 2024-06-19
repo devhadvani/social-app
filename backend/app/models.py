@@ -68,7 +68,7 @@ class Post(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f'{self.user.username} - {self.caption[:20]}'
+        return f'{self.user.email} - {self.caption[:20]}'
 
 class PostImage(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='images')
@@ -84,7 +84,7 @@ class Like(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f'{self.user.username} likes {self.post.id}'
+        return f'{self.user.email} likes {self.post.id}'
 
 class Comment(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='comments')
@@ -94,7 +94,7 @@ class Comment(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f'Comment by {self.user.username} on {self.post.id}'
+        return f'Comment by {self.user.email} on {self.post.id}'
 
 class CommentLike(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='comment_likes')
@@ -102,7 +102,7 @@ class CommentLike(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f'{self.user.username} likes comment {self.comment.id}'
+        return f'{self.user.email} likes comment {self.comment.id}'
 
 class Story(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='stories')

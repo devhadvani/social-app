@@ -232,7 +232,19 @@ const Home = () => {
           <div className="flex space-x-4 overflow-x-auto">
           {stories.map((story, index) => (
               <div key={index} onClick={() => openStoryViewer(story.id)} className="cursor-pointer">
-                <img src={story.user.profile_image || logo} alt="profile" className="w-16 h-16 rounded-full border-2 border-red-500" />
+                <img
+  src={story.user.profile_image || logo}
+  alt="profile"
+  className="w-16 h-16 rounded-full p-1"
+  style={{
+    border: '2px solid white',
+    borderColor: 'transparent',
+    backgroundImage: 'linear-gradient(to right, #fffff, #0000ff)', /* Replace with your gradient colors */
+    WebkitBackgroundClip: 'text',
+    backgroundClip: 'text',
+  }}
+/>
+
                 <p className="text-white text-center text-xs mt-1">{story.username}</p>
               </div>
             ))}
