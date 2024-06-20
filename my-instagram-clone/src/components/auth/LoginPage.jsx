@@ -40,7 +40,8 @@ const LoginPage = () => {
 
         try {
             setLoading(true);
-            const response = await axios.post('http://127.0.0.1:8000/login/', formData);
+            // const response = await axios.post('http://127.0.0.1:8000/login/', formData);
+            const response = await axios.post(`http://${window.location.hostname}:8000/login/`, formData);
             console.log('Login successful', response.data);
             
             // Store the token in localStorage upon successful login
