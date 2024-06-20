@@ -39,7 +39,7 @@ const Home = () => {
       }
     };
 
-    axios.get(`http://${window.location.hostname}/home-posts/`, config)
+    axios.get(`http://${window.location.hostname}:8000/home-posts/`, config)
       .then(response => {
         setPosts(response.data);
         const initialCommentInputs = {};
@@ -61,7 +61,7 @@ const Home = () => {
       }
     };
 
-    axios.get('http://127.0.0.1:8000/following-stories/', config)
+    axios.get(`http://${window.location.hostname}8000/following-stories/`, config)
       .then(response => {
         setStories(response.data);
       })
@@ -83,7 +83,7 @@ const Home = () => {
       }
     };
 
-    axios.post(`http://127.0.0.1:8000/posts/${postId}/like/`, {}, config)
+    axios.post(`http://${window.location.hostname}:8000/posts/${postId}/like/`, {}, config)
       .then(response => {
         setPosts(posts.map(post => {
           if (post.id === postId) {
@@ -121,7 +121,7 @@ const Home = () => {
       }
     };
 
-    axios.post(`http://127.0.0.1:8000/posts/${postId}/comment/`, { text: commentInputs[postId].text }, config)
+    axios.post(`http://${window.location.hostname}:8000/posts/${postId}/comment/`, { text: commentInputs[postId].text }, config)
       .then(response => {
         setPosts(posts.map(post => {
           if (post.id === postId) {
@@ -159,7 +159,7 @@ const Home = () => {
       }
     };
 
-    axios.post(`http://127.0.0.1:8000/comments/${commentId}/like/`, {}, config)
+    axios.post(`http://${window.location.hostname}:8000/comments/${commentId}/like/`, {}, config)
       .then(response => {
         setComments(comments.map(comment => {
           if (comment.id === commentId) {
@@ -194,7 +194,7 @@ const Home = () => {
       }
     };
 
-    axios.get(`http://127.0.0.1:8000/posts/${postId}/comments/`, config)
+    axios.get(`http://${window.location.hostname}:8000/posts/${postId}/comments/`, config)
       .then(response => {
         setComments(response.data);
         setModalIsOpen(true);
