@@ -28,7 +28,7 @@ const UserProfile = () => {
           'Authorization': `Bearer ${token}`
         }
       };
-      const response = await axios.get(`http://${window.location.hostname}/profile/${username}`, config);
+      const response = await axios.get(`http://${window.location.hostname}:8000/profile/${username}`, config);
       setProfile(response.data[0]);
     } catch (error) {
       console.error("Error fetching profile data:", error);
@@ -47,7 +47,7 @@ const UserProfile = () => {
           'Authorization': `Bearer ${token}`
         }
       };
-      const response = await axios.get(`http://${window.location.hostname}/followers/${username}`, config);
+      const response = await axios.get(`http://${window.location.hostname}:8000/followers/${username}`, config);
       setFollowers(response.data);
       setShowFollowersModal(true);
     } catch (error) {
@@ -63,7 +63,7 @@ const UserProfile = () => {
           'Authorization': `Bearer ${token}`
         }
       };
-      const response = await axios.get(`http://${window.location.hostname}/following/${username}`, config);
+      const response = await axios.get(`http://${window.location.hostname}:8000/following/${username}`, config);
       console.log("f", response.data)
       setFollowers(response.data);
       setShowFollowersModal(true);
@@ -81,7 +81,7 @@ const UserProfile = () => {
         }
       };
       console.log(followingName);
-      const response = await axios.post(`http://${window.location.hostname}/follow/`, { following: followingName }, config);
+      const response = await axios.post(`http://${window.location.hostname}:8000/follow/`, { following: followingName }, config);
       fetchProfile(); // Optionally, refresh profile to update follow state
     } catch (error) {
       console.error("Error following user:", error);
@@ -103,7 +103,7 @@ const UserProfile = () => {
           'Authorization': `Bearer ${token}`
         }
       };
-      const response = await axios.delete(`http://${window.location.hostname}/unfollow/${followingName}`, config);
+      const response = await axios.delete(`http://${window.location.hostname}:8000/unfollow/${followingName}`, config);
       fetchProfile(); // Optionally, refresh profile to update follow state
     } catch (error) {
       console.error("Error unfollowing user:", error);
