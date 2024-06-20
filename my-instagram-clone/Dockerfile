@@ -11,7 +11,11 @@ COPY package*.json ./
 RUN npm install --include=dev
 
 # Ensure Vite is installed globally
-RUN npm install -g vite
+# RUN npm install -g vite
+
+RUN ln -s /usr/local/lib/node_modules/ ../node_modules
+
+
 
 # Copy the rest of the code into the container
 COPY . .
