@@ -13,9 +13,11 @@ RUN npm install --include=dev
 # Ensure Vite is installed globally
 RUN npm install -g vite
 
+# Install @vitejs/plugin-react explicitly
+RUN npm install --save-dev @vitejs/plugin-react
+
+# Create a symbolic link for global node_modules
 RUN ln -s /usr/local/lib/node_modules/ ../node_modules
-
-
 
 # Copy the rest of the code into the container
 COPY . .
