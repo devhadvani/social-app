@@ -39,7 +39,7 @@ const Home = () => {
       }
     };
 
-    axios.get('http://127.0.0.1:8000/home-posts/', config)
+    axios.get(`http://${window.location.hostname}/home-posts/`, config)
       .then(response => {
         setPosts(response.data);
         const initialCommentInputs = {};

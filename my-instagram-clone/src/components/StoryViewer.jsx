@@ -17,7 +17,7 @@ const StoryViewer = ({ isOpen, onClose, userId }) => {
         }
       };
 
-      axios.get(`http://127.0.0.1:8000/following-stories/`, config)
+      axios.get(`http://${window.location.hostname}/following-stories/`, config)
         .then(response => {
           setStories(response.data);
           console.log(response.data);

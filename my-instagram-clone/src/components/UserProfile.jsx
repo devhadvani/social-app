@@ -28,7 +28,7 @@ const UserProfile = () => {
           'Authorization': `Bearer ${token}`
         }
       };
-      const response = await axios.get(`http://127.0.0.1:8000/profile/${username}`, config);
+      const response = await axios.get(`http://${window.location.hostname}/profile/${username}`, config);
       setProfile(response.data[0]);
     } catch (error) {
       console.error("Error fetching profile data:", error);
