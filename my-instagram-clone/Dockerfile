@@ -8,7 +8,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install the dependencies
-RUN npm install
+RUN npm install --include=dev
 
 # Ensure Vite is installed globally
 RUN npm install -g vite
