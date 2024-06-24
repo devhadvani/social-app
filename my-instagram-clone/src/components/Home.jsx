@@ -61,7 +61,7 @@ const Home = () => {
       }
     };
 
-    axios.get(`http://${window.location.hostname}8000/following-stories/`, config)
+    axios.get(`http://${window.location.hostname}:8000/following-stories/`, config)
       .then(response => {
         setStories(response.data);
       })
